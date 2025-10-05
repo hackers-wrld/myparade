@@ -18,3 +18,8 @@ NASA Space Apps Challenge
 <img width="480" height="720" alt="8" src="https://github.com/user-attachments/assets/8dc3d6c0-3384-4858-ad47-e5efc72d477b" />
 <img width="480" height="720" alt="6" src="https://github.com/user-attachments/assets/0674f033-818b-4d06-a536-0f5c4a454f00" />
 <img width="480" height="720" alt="5th" src="https://github.com/user-attachments/assets/d5b6f86e-ecb4-49d1-b7ab-ce60ec56b2b8" />
+
+
+## Business Model Canvas
+
+<img width="720" height="480" alt="White and Grey Modern Flat Business Model Canvas Brainstorm" src="https://github.com/user-attachments/assets/5f0263a1-1515-4193-bcb8-54875d24d811" />
