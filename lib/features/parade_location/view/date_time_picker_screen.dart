@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:myparadefixed/core/constants/strings.dart';
+import 'package:myparadefixed/features/parade_location/view/weather_forecast_screen.dart';
 
 class DateTimePickerScreen extends StatefulWidget {
   final String locationAddress;
-
   const DateTimePickerScreen({super.key, required this.locationAddress});
 
   @override
@@ -12,43 +12,71 @@ class DateTimePickerScreen extends StatefulWidget {
 
 class _DateTimePickerScreenState extends State<DateTimePickerScreen> {
   DateTime? _selectedDate;
-  TimeOfDay? _selectedTime;
+  TimeOfDay? _selectedStartTime;
+  TimeOfDay? _selectedEndTime;
   bool _isDateSelected = false;
-  bool _isTimeSelected = false;
+  bool _isStartTimeSelected = false;
+  bool _isEndTimeSelected = false;
 
   @override
   void initState() {
     super.initState();
     // Initialize with current date and time
     _selectedDate = DateTime.now();
-    _selectedTime = TimeOfDay.fromDateTime(DateTime.now());
+    _selectedStartTime = TimeOfDay.fromDateTime(DateTime.now());
+    _selectedEndTime = TimeOfDay.fromDateTime(
+      DateTime.now().add(const Duration(hours: 1)),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    // NEW: Define gradient colors
+    final Color primaryColor = Theme.of(context).colorScheme.primary;
+    final Color secondaryColor = Theme.of(context).colorScheme.secondary;
+
     return Scaffold(
-      appBar: AppBar(title: Text(AppStrings.appName), centerTitle: true),
-      body: Padding(
+      appBar: AppBar(
+        title: Text(AppStrings.appName),
+        centerTitle: true,
+        // NEW: Add gradient background to app bar
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [primaryColor, secondaryColor],
+            ),
+          ),
+        ),
+      ),
+      body: SingleChildScrollView(
+        // Make the entire content scrollable
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header text
             Text(
-              'Hi, when do you plan to have your parade at: ${widget.locationAddress}',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              'When do you plan to have your vacation at: ${widget.locationAddress}',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: primaryColor, // NEW: Use primary color
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
-
-            // Date Picker (Green area)
+            // Date Picker (Green area) - NEW: Use primary color
             Container(
               decoration: BoxDecoration(
-                color: Colors.green[50],
+                color: primaryColor.withOpacity(
+                  0.1,
+                ), // NEW: Use primary color with opacity
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.green[300]!, width: 2),
+                border: Border.all(
+                  color: primaryColor,
+                  width: 2,
+                ), // NEW: Use primary color
               ),
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -56,7 +84,7 @@ class _DateTimePickerScreenState extends State<DateTimePickerScreen> {
                   Text(
                     'Select Date',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Colors.green[800],
+                      color: primaryColor, // NEW: Use primary color
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -64,7 +92,7 @@ class _DateTimePickerScreenState extends State<DateTimePickerScreen> {
                   ElevatedButton(
                     onPressed: () => _selectDate(context),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green[300],
+                      backgroundColor: primaryColor, // NEW: Use primary color
                       padding: const EdgeInsets.symmetric(
                         horizontal: 32,
                         vertical: 16,
@@ -81,112 +109,208 @@ class _DateTimePickerScreenState extends State<DateTimePickerScreen> {
               ),
             ),
             const SizedBox(height: 24),
-
-            // Time Picker (Blue areas)
-            Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.blue[50],
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.blue[300]!, width: 2),
-                    ),
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      children: [
-                        Text(
-                          'Hour',
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(
-                                color: Colors.blue[800],
-                                fontWeight: FontWeight.bold,
-                              ),
-                        ),
-                        const SizedBox(height: 16),
-                        ElevatedButton(
-                          onPressed: () => _selectTime(context),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue[300],
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 32,
-                              vertical: 16,
-                            ),
-                          ),
-                          child: Text(
-                            _selectedTime != null
-                                ? _selectedTime!.hour.toString().padLeft(2, '0')
-                                : 'Pick hour',
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ],
+            // Time Pickers (Blue areas) - NEW: Use primary color
+            Text(
+              'Select Parade Time',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: primaryColor, // NEW: Use primary color
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Start Time
+            Container(
+              decoration: BoxDecoration(
+                color: primaryColor.withOpacity(
+                  0.1,
+                ), // NEW: Use primary color with opacity
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: primaryColor,
+                  width: 2,
+                ), // NEW: Use primary color
+              ),
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  Text(
+                    'Start Time',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: primaryColor, // NEW: Use primary color
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.blue[50],
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.blue[300]!, width: 2),
-                    ),
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      children: [
-                        Text(
-                          'Minute',
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(
-                                color: Colors.blue[800],
-                                fontWeight: FontWeight.bold,
-                              ),
-                        ),
-                        const SizedBox(height: 16),
-                        ElevatedButton(
-                          onPressed: () => _selectTime(context),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue[300],
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 32,
-                              vertical: 16,
-                            ),
-                          ),
-                          child: Text(
-                            _selectedTime != null
-                                ? _selectedTime!.minute.toString().padLeft(
-                                    2,
-                                    '0',
-                                  )
-                                : 'Pick minute',
-                            style: const TextStyle(color: Colors.white),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Start Hour
+                      ElevatedButton(
+                        onPressed: () => _selectStartTime(context),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              primaryColor, // NEW: Use primary color
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 16,
                           ),
                         ),
-                      ],
+                        child: Text(
+                          _selectedStartTime != null
+                              ? _selectedStartTime!.hour.toString().padLeft(
+                                  2,
+                                  '0',
+                                )
+                              : 'HH',
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      const Text(
+                        ':',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      // Start Minute
+                      ElevatedButton(
+                        onPressed: () => _selectStartTime(context),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              primaryColor, // NEW: Use primary color
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 16,
+                          ),
+                        ),
+                        child: Text(
+                          _selectedStartTime != null
+                              ? _selectedStartTime!.minute.toString().padLeft(
+                                  2,
+                                  '0',
+                                )
+                              : 'MM',
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            // End Time
+            Container(
+              decoration: BoxDecoration(
+                color: primaryColor.withOpacity(
+                  0.1,
+                ), // NEW: Use primary color with opacity
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: primaryColor,
+                  width: 2,
+                ), // NEW: Use primary color
+              ),
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  Text(
+                    'End Time',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: primaryColor, // NEW: Use primary color
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // End Hour
+                      ElevatedButton(
+                        onPressed: () => _selectEndTime(context),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              primaryColor, // NEW: Use primary color
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 16,
+                          ),
+                        ),
+                        child: Text(
+                          _selectedEndTime != null
+                              ? _selectedEndTime!.hour.toString().padLeft(
+                                  2,
+                                  '0',
+                                )
+                              : 'HH',
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      const Text(
+                        ':',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      // End Minute
+                      ElevatedButton(
+                        onPressed: () => _selectEndTime(context),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              primaryColor, // NEW: Use primary color
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 16,
+                          ),
+                        ),
+                        child: Text(
+                          _selectedEndTime != null
+                              ? _selectedEndTime!.minute.toString().padLeft(
+                                  2,
+                                  '0',
+                                )
+                              : 'MM',
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 40),
-
-            // Continue Button
-            SizedBox(
+            // Continue Button - NEW: Add gradient
+            Container(
               width: double.infinity,
+              height: 50,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [primaryColor, secondaryColor],
+                ),
+              ),
               child: ElevatedButton(
-                onPressed: _isDateSelected && _isTimeSelected
-                    ? () => _navigateToWeatherScreen(context)
-                    : null,
+                onPressed: () => _navigateToWeatherScreen(context),
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text('Continue'),
+                child: const Text(
+                  'Continue',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ),
+            const SizedBox(height: 20), // Add some space at the bottom
           ],
         ),
       ),
@@ -200,7 +324,6 @@ class _DateTimePickerScreenState extends State<DateTimePickerScreen> {
       firstDate: DateTime(2023),
       lastDate: DateTime(2030),
     );
-
     if (picked != null && picked != _selectedDate) {
       setState(() {
         _selectedDate = picked;
@@ -209,16 +332,28 @@ class _DateTimePickerScreenState extends State<DateTimePickerScreen> {
     }
   }
 
-  Future<void> _selectTime(BuildContext context) async {
+  Future<void> _selectStartTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: _selectedTime ?? TimeOfDay.now(),
+      initialTime: _selectedStartTime ?? TimeOfDay.now(),
     );
-
-    if (picked != null && picked != _selectedTime) {
+    if (picked != null && picked != _selectedStartTime) {
       setState(() {
-        _selectedTime = picked;
-        _isTimeSelected = true;
+        _selectedStartTime = picked;
+        _isStartTimeSelected = true;
+      });
+    }
+  }
+
+  Future<void> _selectEndTime(BuildContext context) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: _selectedEndTime ?? TimeOfDay.now(),
+    );
+    if (picked != null && picked != _selectedEndTime) {
+      setState(() {
+        _selectedEndTime = picked;
+        _isEndTimeSelected = true;
       });
     }
   }
@@ -234,54 +369,16 @@ class _DateTimePickerScreenState extends State<DateTimePickerScreen> {
             _selectedDate!.year,
             _selectedDate!.month,
             _selectedDate!.day,
-            _selectedTime!.hour,
-            _selectedTime!.minute,
+            _selectedStartTime!.hour,
+            _selectedStartTime!.minute,
           ),
-        ),
-      ),
-    );
-  }
-}
-
-// Weather Forecast Screen (placeholder for next step)
-class WeatherForecastScreen extends StatelessWidget {
-  final String locationAddress;
-  final DateTime selectedDateTime;
-
-  const WeatherForecastScreen({
-    super.key,
-    required this.locationAddress,
-    required this.selectedDateTime,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(AppStrings.appName), centerTitle: true),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Weather forecast for $locationAddress',
-              style: Theme.of(context).textTheme.headlineMedium,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Date: ${selectedDateTime.toLocal().toString().split(' ')[0]}',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-            Text(
-              'Time: ${selectedDateTime.hour}:${selectedDateTime.minute.toString().padLeft(2, '0')}',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-            const SizedBox(height: 32),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Back to Location Selection'),
-            ),
-          ],
+          endTime: DateTime(
+            _selectedDate!.year,
+            _selectedDate!.month,
+            _selectedDate!.day,
+            _selectedEndTime!.hour,
+            _selectedEndTime!.minute,
+          ),
         ),
       ),
     );

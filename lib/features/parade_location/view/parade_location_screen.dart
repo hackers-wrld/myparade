@@ -36,8 +36,25 @@ class _ParadeLocationScreenState extends State<ParadeLocationScreen> {
   Widget build(BuildContext context) {
     final controller = Provider.of<LocationController>(context);
 
+    // NEW: Define gradient colors
+    final Color primaryColor = Theme.of(context).colorScheme.primary;
+    final Color secondaryColor = Theme.of(context).colorScheme.secondary;
+
     return Scaffold(
-      appBar: AppBar(title: Text(AppStrings.appName), centerTitle: true),
+      appBar: AppBar(
+        title: Text(AppStrings.appName),
+        centerTitle: true,
+        // NEW: Add gradient background to app bar
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [primaryColor, secondaryColor],
+            ),
+          ),
+        ),
+      ),
       body: Stack(
         children: [
           // Google Map
@@ -74,13 +91,11 @@ class _ParadeLocationScreenState extends State<ParadeLocationScreen> {
                 tappedPoint.latitude,
                 tappedPoint.longitude,
               );
-
               if (controller.currentLocation != null) {
                 _searchController.text = controller.currentLocation!.address;
               }
             },
           ),
-
           // Bottom Sheet
           Align(
             alignment: Alignment.bottomCenter,
@@ -99,7 +114,6 @@ class _ParadeLocationScreenState extends State<ParadeLocationScreen> {
     final maxHeight =
         MediaQuery.of(context).size.height * 0.7; // Max 70% of screen
     final minHeight = 200.0; // Default height
-
     if (controller.suggestions.isNotEmpty || controller.isSearching) {
       return maxHeight;
     }
@@ -107,6 +121,10 @@ class _ParadeLocationScreenState extends State<ParadeLocationScreen> {
   }
 
   Widget _buildBottomSheet(LocationController controller) {
+    // NEW: Define gradient colors
+    final Color primaryColor = Theme.of(context).colorScheme.primary;
+    final Color secondaryColor = Theme.of(context).colorScheme.secondary;
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -133,26 +151,37 @@ class _ParadeLocationScreenState extends State<ParadeLocationScreen> {
               ),
             ),
             const SizedBox(height: 12),
-
-            // Search Bar
-            TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: AppStrings.addressHint,
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+            // Search Bar - NEW: Add gradient border effect (optional)
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [primaryColor, secondaryColor],
                 ),
               ),
-              onChanged: (value) {
-                controller.searchLocations(value);
-              },
-              onSubmitted: (value) {
-                controller.clearSuggestions();
-              },
+              child: TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: AppStrings.addressHint,
+                  prefixIcon: const Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none, // Remove default border
+                  ),
+                  filled: true,
+                  fillColor: Colors.white, // Inner field color
+                ),
+                onChanged: (value) {
+                  controller.searchLocations(value);
+                },
+                onSubmitted: (value) {
+                  controller.clearSuggestions();
+                },
+              ),
             ),
             const SizedBox(height: 16),
-
             // Suggestions List
             Expanded(
               child: controller.isSearching
@@ -162,53 +191,81 @@ class _ParadeLocationScreenState extends State<ParadeLocationScreen> {
                       itemCount: controller.suggestions.length,
                       itemBuilder: (context, index) {
                         final suggestion = controller.suggestions[index];
-                        return ListTile(
-                          leading: const Icon(Icons.location_on),
-                          title: Text(
-                            suggestion.address,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
+                        return Card(
+                          // NEW: Wrap ListTile in Card
+                          margin: const EdgeInsets.symmetric(vertical: 4),
+                          child: ListTile(
+                            leading: const Icon(Icons.location_on),
+                            title: Text(
+                              suggestion.address,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            onTap: () {
+                              controller.selectSuggestion(suggestion);
+                              _searchController.text = suggestion.address;
+                              _moveCameraToLocation(
+                                suggestion.latitude,
+                                suggestion.longitude,
+                              );
+                              FocusScope.of(context).unfocus();
+                            },
                           ),
-                          onTap: () {
-                            controller.selectSuggestion(suggestion);
-                            _searchController.text = suggestion.address;
-                            _moveCameraToLocation(
-                              suggestion.latitude,
-                              suggestion.longitude,
-                            );
-                            FocusScope.of(context).unfocus();
-                          },
                         );
                       },
                     )
                   : const SizedBox(),
             ),
-
-            // Choose Location Button
+            // Choose Location Button - NEW: Add gradient
             if (controller.currentLocation != null) const SizedBox(height: 16),
             if (controller.currentLocation != null)
-              ElevatedButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        'Selected: ${controller.currentLocation!.address}',
-                      ),
-                    ),
-                  );
-
-                  if (controller.currentLocation != null) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DateTimePickerScreen(
-                          locationAddress: controller.currentLocation!.address,
+              Container(
+                width: double.infinity,
+                height: 50,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [primaryColor, secondaryColor],
+                  ),
+                ),
+                child: ElevatedButton(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Selected: ${controller.currentLocation!.address}',
                         ),
                       ),
                     );
-                  }
-                },
-                child: Text(AppStrings.chooseLocation),
+                    if (controller.currentLocation != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DateTimePickerScreen(
+                            locationAddress:
+                                controller.currentLocation!.address,
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    shadowColor: Colors.transparent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Text(
+                    AppStrings.chooseLocation,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
               ),
           ],
         ),

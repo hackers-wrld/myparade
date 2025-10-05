@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "580203880699",
+    "project_id": "myparade-c6c30",
+    "storage_bucket": "myparade-c6c30.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:580203880699:android:b1534cbeb59edba234105e",
+        "android_client_info": {
+          "package_name": "com.example.myparadefixed"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAS8c9A5L6OsuPq1QROia8l3p16k_52WOg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
